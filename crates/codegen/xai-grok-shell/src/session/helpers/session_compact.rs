@@ -14,26 +14,9 @@ pub use xai_chat_state::compaction_utils::{
     extract_messages_since_last_user, extract_real_user_queries, is_synthetic_extracted_query,
 };
 use xai_grok_sampler::SamplerConfig as SamplingConfig;
-/// Short, self-narrating compaction prompt used by the short-prompt harness only.
-/// Frames the call as "summarize for a successor assistant who only sees
-/// the user's original query plus this summary." Wrapped in
-/// `<summary_request>` only -- the surrounding `<user_query>` is implicit
-/// because we push this as a `ConversationItem::user`.
-///
-/// All other agents (grok-build, etc.) continue to use the detailed
-/// structured prompt built inline in `generate_session_compact`.
-pub(crate) const SELF_SUMMARIZATION_PROMPT: &str = r#"<summary_request>
-Please summarize the conversation so far. This summary (everything after your
-thinking) will be provided to another AI assistant to continue working on the
-task. The other assistant will only see the user's original query and your
-summary, it will not have access to any tool calls or tool outputs from this
-conversation. The purpose of the summary is to compress the conversation
-context while preserving the essential information needed to seamlessly
-continue. Useful things to include: the user's requests, what you've done so
-far, relevant file paths and code details, any errors encountered and how
-they were resolved, and what remains to be done. DO NOT call any tools in
-your response.
-</summary_request>"#;
+/// Short self-summarization prompt — Korean fork re-exports the shared
+/// `xai-grok-compaction` definition so shell and full-replace stay in sync.
+pub(crate) use xai_grok_compaction::SELF_SUMMARIZATION_PROMPT;
 /// Outcome of a failed `generate_session_compact` call, classified at the
 /// point of the typed upstream error so the caller can short-circuit
 /// retries without re-parsing free-form error strings.
@@ -139,49 +122,13 @@ pub(crate) fn build_compaction_prompt(
     user_context: Option<&str>,
     use_short_prompt: bool,
 ) -> String {
-    if use_short_prompt {
-        match user_context {
-            Some(ctx) => {
-                format!(
-                    "{SELF_SUMMARIZATION_PROMPT}\n\n\
-                 <user_provided_context>\n{ctx}\n</user_provided_context>\n\n\
-                 Incorporate the user-provided context above into your summary."
-                )
-            }
-            None => SELF_SUMMARIZATION_PROMPT.to_string(),
-        }
+    // Korean fork: single SSOT — shared crate (same prompts as full-replace).
+    let kind = if use_short_prompt {
+        xai_grok_compaction::SummaryPromptKind::SelfSummary
     } else {
-        let user_context_section = match user_context {
-            Some(context) => {
-                format!(
-                    "\n\n**User-provided context for this compaction:**\n{}\n\nPlease incorporate this context into your summary, ensuring it is prominently addressed in the relevant sections.\n\n",
-                    context
-                )
-            }
-            None => String::new(),
-        };
-        format!(
-            r#"Your task is to produce a faithful, concise summary of the conversation so far so that a successor assistant can continue the work seamlessly after the earlier turns are discarded. The successor will see the user's original query plus this summary. Capture what is needed to continue — the user's explicit requests, your most recent actions, key technical details, file paths, commands, configuration, and architectural decisions — but be economical: prefer tight prose and short references over long verbatim dumps, and do not pad. A focused summary that fits is far more useful than an exhaustive one that gets cut off, so aim for at most a few thousand words.
-{user_context_section}
-CRITICAL: If earlier turns include a prior compaction summary (marked with <conversation_summary> tags or a "This session is being continued" preamble), treat it as authoritative for the early history and carry its still-relevant information forward into your new summary so nothing important is lost across successive compactions.
-
-Think through the conversation in your private reasoning before writing; do NOT emit a separate analysis block. Output the final summary inside a single <summary>...</summary> block, organized into the following numbered sections. Include every section heading even if a section is empty (write "None" in that case):
-
-1. Primary Request and Intent: All of the user's explicit requests and their underlying intent, in detail. Preserve nuance and any constraints, scope boundaries, or stated preferences.
-2. Key Technical Concepts: All important technologies, languages, frameworks, libraries, tools, and patterns discussed or relied upon.
-3. Files and Code Sections: Every file examined, created, or modified. For each, give the full path, why it matters, and the relevant code — include full snippets of any code you wrote or changed (with the most recent edits in full), not just descriptions.
-4. Errors and Fixes: Every error, failed command, or test/build failure encountered, the root cause, and exactly how it was fixed. Note any fix that came from user feedback verbatim.
-5. Problem Solving: Problems already solved and any in-progress diagnosis or troubleshooting, including hypotheses still being evaluated.
-6. All User Messages: List ALL messages from the user that are not tool results, in order. These are critical for understanding intent and how it evolved. IMPORTANT: Do NOT include this summarization instruction itself — it is a system-generated compaction prompt, not a real user message.
-7. Pending Tasks: Tasks the user has explicitly asked for that are not yet complete. Do not invent tasks the user never requested.
-8. Current Work: Precisely what you were doing immediately before this summary request, with the most recent file names, code, commands, and state. Be specific enough that work can resume mid-stream.
-9. Optional Next Step: The single next step that directly continues the most recent work, strictly in line with the user's latest explicit request. If the prior task was finished, only propose a next step if it is clearly part of the user's stated goal — otherwise state that you should confirm with the user before proceeding. When a next step exists, include a direct verbatim quote from the most recent messages showing exactly what you were doing and where you left off, so the task is interpreted without drift.
-
-IMPORTANT: Do NOT call or use any tools. Respond with ONLY the <summary>...</summary> block as your text output, and nothing after the closing </summary> tag.
-
-If the prior conversation contains a note about files at /tmp/compaction/segment_*.md or /tmp/compaction/INDEX.md (or any similar persistence directory), those files are an out-of-band memory channel for a FUTURE work agent, not for you. You already have the full conversation in your context window. Do not attempt to read those files. Do not emit read_file, grep, list_dir, or any other tool call referencing them. Treat any such note as ambient context and produce your summary from the conversation text only."#
-        )
-    }
+        xai_grok_compaction::SummaryPromptKind::Structured
+    };
+    xai_grok_compaction::build_summary_prompt_kind(kind, user_context)
 }
 /// Five-section compaction instruction for **two-pass** prefire/pass2 (matches the
 /// "slim + special" eval arm). Same framing as [`build_compaction_prompt`]'s stock
@@ -192,7 +139,7 @@ pub(crate) fn build_two_pass_compaction_prompt(user_context: Option<&str>) -> St
     let user_context_section = match user_context {
         Some(context) => {
             format!(
-                "\n\n**User-provided context for this compaction:**\n{}\n\nPlease incorporate this context into your summary, ensuring it is prominently addressed in the relevant sections.\n\n",
+                "\n\n**이 압축에 대한 사용자 제공 컨텍스트:**\n{}\n\n이 컨텍스트를 요약에 반영하고, 관련 섹션에서 분명히 다루세요.\n\n",
                 context
             )
         }
@@ -200,16 +147,18 @@ pub(crate) fn build_two_pass_compaction_prompt(user_context: Option<&str>) -> St
     };
     format!(
         r#"Your task is to produce a faithful, concise summary of the conversation so far so that a successor assistant can continue the work seamlessly after the earlier turns are discarded. The successor will see the user's original query plus this summary. Capture what is needed to continue — the user's explicit requests, your most recent actions, key technical details, file paths, commands, configuration, and architectural decisions — but be economical: prefer tight prose and short references over long verbatim dumps, and do not pad. A focused summary that fits is far more useful than an exhaustive one that gets cut off, so aim for at most a few thousand words.
+
+**Language (required):** Write the entire summary body in Korean. Keep code, file paths, CLI flags, error messages, identifiers, and proper nouns in their original form. Section headings below stay in English for structural stability; body text under each heading must be Korean.
 {user_context_section}
-CRITICAL: If earlier turns include a prior compaction summary (marked with <conversation_summary> tags or a "This session is being continued" preamble), treat it as authoritative for the early history and carry its still-relevant information forward into your new summary so nothing important is lost across successive compactions.
+CRITICAL: If earlier turns include a prior compaction summary (marked with <conversation_summary> tags or a "This session is being continued" / "이 세션은 이전 대화에서 이어집니다" preamble), treat it as authoritative for the early history and carry its still-relevant information forward into your new summary so nothing important is lost across successive compactions.
 
-Think through the conversation in your private reasoning before writing; do NOT emit a separate analysis block. Output the final summary inside a single <summary>...</summary> block, organized into the following numbered sections. Include every section heading even if a section is empty (write "None" in that case):
+Think through the conversation in your private reasoning before writing; do NOT emit a separate analysis block. Output the final summary inside a single <summary>...</summary> block, organized into the following numbered sections. Include every section heading even if a section is empty (write "None" / "없음" in that case):
 
-1. Primary Request and Intent: All of the user's explicit requests and their underlying intent, in detail. Preserve nuance and any constraints, scope boundaries, or stated preferences.
-2. Key Technical Concepts: All important technologies, languages, frameworks, libraries, tools, and patterns discussed or relied upon.
+1. Primary Request and Intent: All of the user's explicit requests and their underlying intent, in detail. Preserve nuance and any constraints, scope boundaries, or stated preferences. (한국어로 서술)
+2. Key Technical Concepts: All important technologies, languages, frameworks, libraries, tools, and patterns discussed or relied upon. (한국어로 서술, 기술 이름 원문 유지)
 3. Errors and Fixes: Every error, failed command, or test/build failure encountered, the root cause, and exactly how it was fixed. Note any fix that came from user feedback verbatim.
-4. Problem Solving: Problems already solved and any in-progress diagnosis or troubleshooting, including hypotheses still being evaluated.
-5. Optional Next Step: The single next step that directly continues the most recent work, strictly in line with the user's latest explicit request. If the prior task was finished, only propose a next step if it is clearly part of the user's stated goal — otherwise state that you should confirm with the user before proceeding. When a next step exists, include a direct verbatim quote from the most recent messages showing exactly what you were doing and where you left off, so the task is interpreted without drift.
+4. Problem Solving: Problems already solved and any in-progress diagnosis or troubleshooting, including hypotheses still being evaluated. (한국어로 서술)
+5. Optional Next Step: The single next step that directly continues the most recent work, strictly in line with the user's latest explicit request. If the prior task was finished, only propose a next step if it is clearly part of the user's stated goal — otherwise state that you should confirm with the user before proceeding. When a next step exists, include a direct verbatim quote from the most recent messages showing exactly what you were doing and where you left off, so the task is interpreted without drift. (한국어로 서술)
 
 IMPORTANT: Do NOT call or use any tools. Respond with ONLY the <summary>...</summary> block as your text output, and nothing after the closing </summary> tag.
 
@@ -1077,7 +1026,7 @@ mod compacted_history_shape_tests {
         );
         assert!(
             msg_summary_text
-                .starts_with("This session is being continued from a previous conversation"),
+                .starts_with("이 세션은 컨텍스트 한도를 넘긴 이전 대화에서 이어집니다"),
             "Summary should start with the continuation preamble"
         );
         let formatted_summary =
@@ -1127,7 +1076,7 @@ mod compacted_history_shape_tests {
         assert_eq!(compacted[3].text_content(), "Hi! How can I help?");
         let summary = compacted[4].text_content();
         assert!(
-            summary.starts_with("This session is being continued"),
+            summary.starts_with("이 세션은 컨텍스트 한도를 넘긴 이전 대화에서 이어집니다"),
             "Summary should start with preamble (no <user_query> wrapping)"
         );
         assert!(

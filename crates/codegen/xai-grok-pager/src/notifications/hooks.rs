@@ -112,7 +112,7 @@ mod tests {
 
         execute_hook(
             &command,
-            "Turn complete",
+            "턴 완료",
             "hello world",
             Some("sess-42"),
             Duration::from_secs(5),
@@ -120,7 +120,7 @@ mod tests {
 
         let content = std::fs::read_to_string(&out).unwrap();
         assert!(
-            content.contains("GROK_EVENT=Turn complete"),
+            content.contains("GROK_EVENT=턴 완료"),
             "missing GROK_EVENT: {content}"
         );
         assert!(
@@ -141,7 +141,7 @@ mod tests {
 
         execute_hook(
             &command,
-            "Turn complete",
+            "턴 완료",
             "msg",
             None,
             Duration::from_secs(5),
@@ -159,7 +159,7 @@ mod tests {
         let start = Instant::now();
         execute_hook(
             "sleep 100",
-            "Turn complete",
+            "턴 완료",
             "msg",
             None,
             Duration::from_secs(1),
@@ -175,7 +175,7 @@ mod tests {
     fn handles_failed_shell_command_gracefully() {
         execute_hook(
             "/nonexistent/path/binary",
-            "Turn complete",
+            "턴 완료",
             "msg",
             None,
             Duration::from_secs(1),
@@ -186,7 +186,7 @@ mod tests {
     fn handles_nonzero_exit_gracefully() {
         execute_hook(
             "exit 1",
-            "Turn complete",
+            "턴 완료",
             "msg",
             None,
             Duration::from_secs(5),
@@ -201,7 +201,7 @@ mod tests {
 
         execute_hook(
             &command,
-            "Turn complete",
+            "턴 완료",
             "msg",
             None,
             Duration::from_secs(5),
@@ -281,7 +281,7 @@ mod tests {
             );
             std::thread::sleep(Duration::from_millis(50));
         };
-        assert!(content.contains("GROK_EVENT=Turn complete"));
+        assert!(content.contains("GROK_EVENT=턴 완료"));
         assert!(content.contains("GROK_MESSAGE=test body payload"));
         assert!(content.contains("GROK_SESSION_ID=test-session-123"));
     }

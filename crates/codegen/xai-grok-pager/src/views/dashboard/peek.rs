@@ -963,21 +963,21 @@ pub fn extract_last_response_type(agent: &AgentView) -> String {
     // execution or waiting for results.
     if running {
         match agent.session.turn_activity() {
-            Some(TurnActivity::Thinking) => return "Thinking".to_string(),
-            Some(TurnActivity::Responding) => return "Response".to_string(),
-            Some(TurnActivity::AutoCompacting) => return "Compacting".to_string(),
-            Some(TurnActivity::Retrying { .. }) => return "Retrying".to_string(),
+            Some(TurnActivity::Thinking) => return "생각 중".to_string(),
+            Some(TurnActivity::Responding) => return "응답".to_string(),
+            Some(TurnActivity::AutoCompacting) => return "압축 중".to_string(),
+            Some(TurnActivity::Retrying { .. }) => return "재시도".to_string(),
             // A tool is executing: fall through to the scan to recover its
             // specific label (Bash/Read/…); a missing/stale block yields the
             // generic "Working" fallback below.
             Some(TurnActivity::ToolRunning { .. }) => {}
             // Blocked on a suppressed tool (task output / wait / sleep) → keep
             // the compact "Working" the peek showed before this was surfaced.
-            Some(TurnActivity::Waiting(_)) => return "Working".to_string(),
+            Some(TurnActivity::Waiting(_)) => return "작업 중".to_string(),
             // Turn running but no live activity (e.g. just granted a
             // permission and waiting for tool results / the next inference) →
             // "Working", never a stale response.
-            None => return "Working".to_string(),
+            None => return "작업 중".to_string(),
         }
     }
     let len = agent.scrollback.len();
@@ -994,10 +994,10 @@ pub fn extract_last_response_type(agent: &AgentView) -> String {
                 if running {
                     break;
                 }
-                return "Response".to_string();
+                return "응답".to_string();
             }
             RenderBlock::Thinking(_) => {
-                return if running { "Thinking" } else { "Thought" }.to_string();
+                return if running { "생각 중" } else { "생각" }.to_string();
             }
             RenderBlock::ToolCall(tc) => {
                 let label = match tc {
@@ -1034,9 +1034,9 @@ pub fn extract_last_response_type(agent: &AgentView) -> String {
         }
     }
     if running {
-        "Working".to_string()
+        "작업 중".to_string()
     } else {
-        "Idle".to_string()
+        "대기".to_string()
     }
 }
 

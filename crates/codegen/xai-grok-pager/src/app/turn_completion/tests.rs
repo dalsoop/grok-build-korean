@@ -435,7 +435,7 @@ fn real_end_marker_stays_plain_with_running_work() {
     let block = last_marker_block(&agent);
     assert!(!block.parked);
     assert_eq!(block.prompt_id.as_deref(), Some("p1"));
-    assert_eq!(block.event.message(), "Worked for 2.0s");
+    assert_eq!(block.event.message(), "2.0s 동안 작업함");
     assert_eq!(
         agent.watchers().commands,
         1,
@@ -456,7 +456,7 @@ fn workless_marker_renders_legacy_text() {
     );
 
     let block = last_marker_block(&agent);
-    assert_eq!(block.event.message(), "Worked for 2.0s");
+    assert_eq!(block.event.message(), "2.0s 동안 작업함");
 }
 
 // ── Send-now cancel marker suppression (viewer finalize rail) ────────
@@ -585,7 +585,7 @@ fn completion_folds_tail_parked_marker_instead_of_duplicating() {
     assert!(!markers[0].parked, "the folded marker is the real turn end");
     assert_eq!(
         markers[0].event.message(),
-        "Worked for 5.0s",
+        "5.0s 동안 작업함",
         "the folded marker carries the final elapsed"
     );
 }

@@ -5311,7 +5311,7 @@ mod tests {
         );
         assert_eq!(
             WaitingReason::task_output().label(),
-            "Waiting on task output…"
+            "작업 출력 대기 중…"
         );
         assert_eq!(
             WaitingReason::TaskOutput {
@@ -5336,7 +5336,7 @@ mod tests {
     #[test]
     fn format_waiting_for_subject_matches_label_shape() {
         assert_eq!(format_waiting_for_subject("run tests"), "run tests…");
-        assert_eq!(format_waiting_for_subject("   "), "Waiting on task output…");
+        assert_eq!(format_waiting_for_subject("   "), "작업 출력 대기 중…");
     }
     /// A `task` ToolCall carrying the shell's `_meta.subagentBackground` flag.
     fn task_call_with_bg(id: &str, background: bool) -> acp::SessionUpdate {
@@ -5357,7 +5357,7 @@ mod tests {
         )
     }
     /// Shell-stamped foreground (`subagentBackground=false`): the subagent wait
-    /// surfaces from frame 1 — no "Waiting for response…" flash.
+    /// surfaces from frame 1 — no "응답 대기 중…" flash.
     #[test]
     fn foreground_stamp_waits_on_subagent_from_frame_one() {
         let mut sb = ScrollbackState::new();

@@ -214,7 +214,7 @@ async fn reparked_wait_repushes_buried_marker() {
     assert!(
         screen
             .lines()
-            .filter(|l| l.contains("Worked for"))
+            .filter(|l| l.contains("동안 작업함"))
             .all(|l| !l.contains("still running")),
         "no marker line may carry the still-running suffix; screen:\n{screen}"
     );

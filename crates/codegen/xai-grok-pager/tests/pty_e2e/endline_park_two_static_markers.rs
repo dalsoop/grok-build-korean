@@ -139,7 +139,7 @@ async fn endline_park_two_static_markers() {
     assert!(
         screen
             .lines()
-            .filter(|l| l.contains("Worked for"))
+            .filter(|l| l.contains("동안 작업함"))
             .all(|l| !l.contains("still running")),
         "the parked marker carries no still-running suffix; screen:\n{screen}"
     );
@@ -183,7 +183,7 @@ async fn endline_park_two_static_markers() {
         screen.matches("Worked for").count() == 2
             && screen
                 .lines()
-                .filter(|l| l.contains("Worked for"))
+                .filter(|l| l.contains("동안 작업함"))
                 .all(|l| !l.contains("still running"))
             && !screen.contains("Turn cancelled by user")
             && matches!(

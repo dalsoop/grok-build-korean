@@ -234,8 +234,8 @@ impl AgentView {
         let agent_output_epoch = self.session.tracker.agent_output_epoch();
         let mut block = crate::scrollback::blocks::SessionEventBlock::new(
             crate::scrollback::blocks::SessionEvent::TurnCompleted {
-                // Unknown elapsed renders as "Worked for 0.0s" rather than
-                // falling back to `None`'s bare "Turn completed." — the park
+                // Unknown elapsed renders as "0.0s 동안 작업함" rather than
+                // falling back to `None`'s bare "턴 완료." — the park
                 // boundary should read like every other turn marker.
                 elapsed: Some(self.turn_elapsed().unwrap_or_default()),
             },

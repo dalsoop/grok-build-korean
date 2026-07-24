@@ -149,7 +149,7 @@ fn write_item(
                 write_activity(buf, activity);
             } else if state.is_busy {
                 push_separator(buf, has_parts);
-                buf.push_str("Waiting");
+                buf.push_str("대기 중");
             } else {
                 return false;
             }
@@ -203,7 +203,7 @@ fn write_item(
                 return false;
             }
             push_separator(buf, has_parts);
-            buf.push_str("\u{26A0} Action Required");
+            buf.push_str("\u{26A0} 승인 필요");
         }
     }
     *has_parts = true;
@@ -240,7 +240,7 @@ fn write_activity(buf: &mut String, activity: &TurnActivity) {
             max_retries,
             ..
         } => {
-            let _ = write!(buf, "Retrying ({}/{})", attempt, max_retries);
+            let _ = write!(buf, "재시도 ({}/{})", attempt, max_retries);
         }
         TurnActivity::Waiting(reason) => buf.push_str(&reason.label()),
     }
@@ -555,7 +555,7 @@ mod tests {
             ..idle_state()
         };
         mgr.update(&state);
-        assert_eq!(mgr.last_title, "Waiting - grok");
+        assert_eq!(mgr.last_title, "대기 중 - grok");
     }
 
     #[test]

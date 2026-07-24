@@ -68,8 +68,8 @@ impl ToolCategory {
             Self::WebFetch => "Fetch",
             Self::WebSearch => "WebSearch",
             Self::Other => "Other",
-            Self::Thinking => "Thinking",
-            Self::Message => "Message",
+            Self::Thinking => "생각 중",
+            Self::Message => "메시지",
         }
     }
 

@@ -188,7 +188,7 @@ async fn endline_wakeups_are_markerless() {
     assert!(
         screen
             .lines()
-            .filter(|l| l.contains("Worked for"))
+            .filter(|l| l.contains("동안 작업함"))
             .all(|l| !l.contains("still running")),
         "markers must never carry a still-running suffix; screen:\n{screen}"
     );

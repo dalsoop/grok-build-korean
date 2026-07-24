@@ -112,11 +112,11 @@ pub enum NotificationEventKind {
 impl NotificationEventKind {
     pub fn as_str(&self) -> &'static str {
         match self {
-            Self::TurnComplete => "Turn complete",
-            Self::ApprovalRequired => "Approval required",
-            Self::SessionReady => "Session ready",
-            Self::TaskComplete => "Task complete",
-            Self::AgentError => "Agent error",
+            Self::TurnComplete => "턴 완료",
+            Self::ApprovalRequired => "승인 필요",
+            Self::SessionReady => "세션 준비됨",
+            Self::TaskComplete => "작업 완료",
+            Self::AgentError => "에이전트 오류",
         }
     }
 }

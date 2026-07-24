@@ -146,15 +146,15 @@ impl SessionEvent {
             SessionEvent::TurnCompleted {
                 elapsed: Some(elapsed),
             } => {
-                format!("Worked for {}", format_duration(*elapsed))
+                format!("{} 동안 작업함", format_duration(*elapsed))
             }
-            SessionEvent::TurnCompleted { elapsed: None } => "Turn completed.".to_string(),
+            SessionEvent::TurnCompleted { elapsed: None } => "턴 완료.".to_string(),
             SessionEvent::TurnCancelled { elapsed } => {
-                format!("Turn cancelled by user in {}.", format_duration(*elapsed))
+                format!("사용자가 {} 만에 턴을 취소함.", format_duration(*elapsed))
             }
             SessionEvent::TurnHalted { elapsed } => {
                 format!(
-                    "Agent was unable to make progress \u{2014} turn ended in {}.",
+                    "진행이 막혀 턴 종료 \u{2014} {}.",
                     format_duration(*elapsed)
                 )
             }
@@ -162,16 +162,16 @@ impl SessionEvent {
                 error,
                 elapsed: Some(elapsed),
             } => {
-                format!("Turn failed in {}: {error}", format_duration(*elapsed))
+                format!("{} 만에 턴 실패: {error}", format_duration(*elapsed))
             }
             SessionEvent::TurnFailed {
                 error,
                 elapsed: None,
             } => {
-                format!("Turn failed: {error}")
+                format!("턴 실패: {error}")
             }
             SessionEvent::CompactionStarted { percentage } => {
-                format!("Context {percentage}% full. Compacting…")
+                format!("컨텍스트 {percentage}% 사용 중. 압축 중…")
             }
             SessionEvent::CompactionCompleted {
                 tokens_before,
@@ -183,11 +183,11 @@ impl SessionEvent {
                 let body = match tokens_before {
                     Some(before) if *before > 0 => {
                         format!(
-                            "Context compacted: {} → {after} tokens",
+                            "컨텍스트 압축: {} → {after} 토큰",
                             format_tokens(*before)
                         )
                     }
-                    _ => format!("Context compacted → {after} tokens"),
+                    _ => format!("컨텍스트 압축 → {after} 토큰"),
                 };
                 if let Some(ms) = elapsed_ms {
                     let secs = *ms as f64 / 1000.0;
@@ -198,34 +198,33 @@ impl SessionEvent {
             }
             SessionEvent::CompactionFailed { error } => {
                 if error.trim().is_empty() {
-                    "Compaction failed.".to_string()
+                    "압축 실패.".to_string()
                 } else {
-                    format!("Compaction failed: {error}")
+                    format!("압축 실패: {error}")
                 }
             }
-            SessionEvent::CompactionCancelled => "Compaction cancelled.".to_string(),
+            SessionEvent::CompactionCancelled => "압축 취소됨.".to_string(),
             SessionEvent::RetryFailed { error, error_type } => {
                 if error_type.as_deref() == Some("encrypted_content_mismatch") {
-                    "This session's conversation history is incompatible with the \
-                     current model. Please start a new session."
+                    "이 세션의 대화 기록이 현재 모델과 호환되지 않습니다. \
+                     새 세션을 시작해 주세요."
                         .to_string()
                 } else {
-                    format!("Retry failed: {error}")
+                    format!("재시도 실패: {error}")
                 }
             }
             SessionEvent::ReAuthRequired => {
-                "Authentication required \u{2014} your session has expired or your \
-                 credentials were rejected. Run /login to re-authenticate, then resend \
-                 your message."
+                "인증 필요 \u{2014} 세션이 만료되었거나 자격 증명이 거부되었습니다. \
+                 /login 으로 다시 로그인한 뒤 메시지를 다시 보내 주세요."
                     .to_string()
             }
             SessionEvent::ContextTooLarge => {
-                "This conversation is too large for the model's context window. \
-                 Use /new to start a new session."
+                "대화가 모델 컨텍스트 한도를 초과했습니다. \
+                 /new 로 새 세션을 시작하세요."
                     .to_string()
             }
             SessionEvent::CompactCompleted { elapsed } => {
-                format!("Compaction completed in {}.", format_duration(*elapsed))
+                format!("{} 만에 압축 완료.", format_duration(*elapsed))
             }
             SessionEvent::HookAnnotation { message } => message.clone(),
             SessionEvent::ModelUnavailable {
@@ -236,16 +235,16 @@ impl SessionEvent {
                 if new_model_id.is_empty() {
                     reason.clone()
                 } else {
-                    format!("{reason} Switched to \"{new_model_id}\".")
+                    format!("{reason} \"{new_model_id}\" 로 전환됨.")
                 }
             }
             SessionEvent::MemorySaved { path, trigger } => {
                 let short_path = crate::util::abbreviate_path(path);
-                format!("Memory saved ({trigger}) \u{2192} {short_path}  \u{00b7}  /memory to view")
+                format!("메모리 저장 ({trigger}) \u{2192} {short_path}  \u{00b7}  보려면 /memory")
             }
             SessionEvent::GoalCompleted { elapsed } => {
                 format!(
-                    "Goal complete \u{2014} {} end-to-end.",
+                    "목표 완료 \u{2014} 처음부터 끝까지 {}.",
                     format_duration(*elapsed)
                 )
             }
@@ -669,7 +668,7 @@ mod tests {
         let event = SessionEvent::TurnCompleted {
             elapsed: Some(Duration::from_secs(125)),
         };
-        assert_eq!(event.message(), "Worked for 2m5s");
+        assert_eq!(event.message(), "2m5s 동안 작업함");
     }
 
     #[test]
@@ -851,7 +850,7 @@ mod tests {
         let event = SessionEvent::CompactionFailed {
             error: String::new(),
         };
-        assert_eq!(event.message(), "Compaction failed.");
+        assert_eq!(event.message(), "압축 실패.");
     }
 
     #[test]
@@ -1170,7 +1169,7 @@ mod tests {
         assert_eq!(out.lines.len(), 1, "collapsed marker stays a single line");
         let text = plain(&out.lines[0]);
         assert!(
-            text.starts_with("Worked for 5.0s"),
+            text.starts_with("5.0s 동안 작업함"),
             "marker text keeps the left edge: {text}"
         );
         assert!(
@@ -1190,14 +1189,14 @@ mod tests {
         );
         assert_eq!(
             out.lines[0].selection_text.as_deref(),
-            Some("Worked for 5.0s")
+            Some("5.0s 동안 작업함")
         );
     }
 
     #[test]
     fn stop_hooks_summary_wraps_to_own_line_when_narrow() {
         let block = completed_with_stop_hooks();
-        // "Worked for 5.0s" is 15 cols; the summary is 16 — no room
+        // "5.0s 동안 작업함" is 15 cols; the summary is 16 — no room
         // at width 30, so the summary right-justifies on its own line.
         let out = block.output(&BlockContext {
             mode: DisplayMode::Collapsed,
@@ -1308,7 +1307,7 @@ mod tests {
             mode: DisplayMode::Collapsed,
             ..ctx()
         });
-        assert_eq!(plain(&out.lines[0]), "Worked for 5.0s");
+        assert_eq!(plain(&out.lines[0]), "5.0s 동안 작업함");
     }
 
     #[test]
@@ -1382,6 +1381,6 @@ mod tests {
         // transcript suffix.
         let block = parked_marker();
         let out = block.output(&ctx());
-        assert_eq!(plain(&out.lines[0]), "Worked for 24s");
+        assert_eq!(plain(&out.lines[0]), "24s 동안 작업함");
     }
 }
