@@ -1,0 +1,42 @@
+# agent capture 50x40
+# generated: 2026-07-24T06:00:22Z
+
+                                                  
+  ~/Documents/WORK/WO… ⠦ MCP (6/8) │ 7.9K / 500K  
+                                                  
+                                                  
+     ❯ echo narrow-clip-probe-         3:00 PM    
+       1784872809                                 
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+    ⠦ Waiting for respo… 5.4s 5.4s ⇣7.95k [stop]  
+                                                  
+  ╭────────────────────────────────────────────╮  
+  │ ❯                                          │  
+  ╰───────── Grok 4.5 (high) · always-approve ─╯  
+                                                  
+  Shift+Tab:mode  │  Esc:cancel  │  Ctrl+x:       
+                                                  

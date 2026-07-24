@@ -1,0 +1,42 @@
+# agent capture 120x40
+# generated: 2026-07-24T06:00:20Z
+
+                                                                                                                        
+  ~/Documents/WORK/WORKSPACE/apps/swift-app-mono/.bare/main                                  ⠼ MCP (3/8) │ 7.9K / 500K  
+                                                                                                                        
+                                                                                                                        
+     ❯ echo narrow-clip-probe-1784872809                                                                     3:00 PM    
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+    ⠼ Waiting for response… 2.7s                                                                    2.7s ⇣7.95k [stop]  
+                                                                                                                        
+  ╭──────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮  
+  │ ❯                                                                                                                │  
+  ╰─────────────────────────────────────────────────────────────────────────────── Grok 4.5 (high) · always-approve ─╯  
+                                                                                                                        
+  Shift+Tab:mode  │  Esc:cancel  │  Ctrl+x:shortcuts                                                                    
+                                                                                                                        

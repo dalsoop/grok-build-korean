@@ -1,0 +1,32 @@
+# sim narrow (70 cols) — path starved / tight
+generated: 2026-07-24T05:22:03.381535+00:00
+term_width: 70
+area_width (after outer_hpad 2+2): 66
+cluster_total_width: 71
+start_x (absolute): 2
+cwd_budget: 0
+cwd_shown: ''
+overflows: True
+overflow_cols: 5
+
+items (push order = left→right inside right-aligned cluster):
+  [0] 'bg_tasks': '⠋ 2' (w=3)
+  [1] 'plan': 'plan' (w=4)
+  [2] 'goal': 'Active · 12.4k/50k tokens · 3m' (w=30)
+  [3] 'context': '████████ 67.5%' (w=14)
+  [4] 'queue': '+3' (w=2)
+  [5] 'badge': '3/7' (w=3)
+
+logical chip cluster (may extend past area):
+  |⠋ 2 │ plan │ Active · 12.4k/50k tokens · 3m │ ████████ 67.5% │ +3 │ 3/7|
+  len=71
+
+full terminal row visible in 70 cols:
+  |  ⠋ 2 │ plan │ Active · 12.4k/50k tokens · 3m │ ████████ 67.5% │ +3 │ |
+
+CLIPPED PAST RIGHT EDGE (not visible):
+  |3/7|
+
+column ruler:
+  0123456789012345678901234567890123456789012345678901234567890123456789
+
