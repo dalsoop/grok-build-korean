@@ -1,57 +1,81 @@
-# grok-build-korean — Korean fork of Grok Build
+# grok-build-korean
 
-Public fork of [xai-org/grok-build](https://github.com/xai-org/grok-build) (Apache-2.0).
+한국어 기본으로 다듬은 [xai-org/grok-build](https://github.com/xai-org/grok-build) 공개 포크 (Apache-2.0).
 
-Upstream does not accept external contributions. This fork ships a **side-by-side** binary `grok-ko` so the official `grok` install stays untouched.
+업스트림은 외부 PR을 받지 않음. 이 포크는 공식 `grok` 옆에 **`grok-ko`** 를 사이드바이사이드로 설치함.
 
-## What changed (phase 1+2)
-
-| Area | Change |
-|------|--------|
-| Session title | Korean title prompt; empty fallback `새 세션` |
-| Idle `/recap` | Korean one-line recap instruction; UI label `요약` |
-| Compaction | Summary body required Korean; carrier preamble Korean; heading `요약:` |
-| TUI chrome | Activity titles: `생각 중` / `응답 중` / `압축 중` / wait labels |
-
-Code, paths, CLI flags, and proper nouns stay in original form.
-
-## Build
-
-Requirements: Rust (via `rust-toolchain.toml`), [DotSlash](https://dotslash-cli.com), `protoc`.
+## Quick start
 
 ```bash
-brew install dotslash protobuf   # macOS
-cargo build -p xai-grok-pager-bin --release
-# artifact:
-#   target/release/grok-ko
+# deps (macOS)
+brew install dotslash protobuf
+
+# build + install (~/.local/bin and brew bin if writable)
+make install
+
+# smoke (headless Korean title)
+make smoke
+
+# use
+grok-ko          # this fork
+grok             # official (unchanged)
 ```
 
-## Install side-by-side
+Both share `~/.grok/` (auth, sessions, `config.toml`).
+
+## What is Koreanized
+
+| Bundle | Scope |
+|--------|--------|
+| **A** | Session titles, idle recap (`요약`), compact summaries, turn/status chrome |
+| **B** | Slash descriptions, New session, permission mode, resume reminders, turn toasts |
+
+Full path inventory: [`docs/fork/CHANGES.md`](docs/fork/CHANGES.md)  
+Repo layout: [`docs/fork/LAYOUT.md`](docs/fork/LAYOUT.md)
+
+## Layout
+
+```text
+Makefile                 build / install / smoke / upstream
+scripts/install-grok-ko.sh
+scripts/smoke-grok-ko.sh
+scripts/sync-upstream.sh
+docs/fork/LAYOUT.md
+docs/fork/CHANGES.md
+crates/…                 patched upstream sources
+```
+
+## Branches
+
+| Branch | Role |
+|--------|------|
+| **`main`** | Default ship branch (upstream + Korean patches) |
+| `korean-i18n` | Historical; prefer `main` |
+
+## Upstream sync
 
 ```bash
-install -m 755 target/release/grok-ko "$HOME/.local/bin/grok-ko"
+make upstream-fetch
 # or
-install -m 755 target/release/grok-ko /opt/homebrew/bin/grok-ko
+./scripts/sync-upstream.sh
+
+# then carefully:
+git merge upstream/main
+# re-check docs/fork/CHANGES.md paths after conflicts
+make install && make smoke
 ```
 
-Official `grok` (~/.grok/bin/grok) is unchanged. Prefer:
+## Coexistence
+
+| Binary | Path example | Source |
+|--------|--------------|--------|
+| `grok-ko` | `~/.local/bin/grok-ko`, `/opt/homebrew/bin/grok-ko` | this repo |
+| `grok` | `~/.grok/bin/grok` | official install script |
+
+Do **not** replace official `grok` with this fork unless you mean to.
+
+## Status check
 
 ```bash
-grok-ko   # Korean-tuned fork
-grok      # upstream binary
-```
-
-Both share `~/.grok/` config, auth, and sessions.
-
-## Branch
-
-- `main` — upstream mirror
-- `korean-i18n` — this fork’s Korean patches
-
-## Sync upstream
-
-```bash
-git remote add upstream https://github.com/xai-org/grok-build.git  # once
-git fetch upstream
-git merge upstream/main   # resolve conflicts in prompt/UI strings carefully
+make version
 ```

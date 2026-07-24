@@ -1,8 +1,13 @@
-> **This is `dalsoop/grok-build-korean`** — a Korean-tuned public fork of [xai-org/grok-build](https://github.com/xai-org/grok-build).
+> **This is `dalsoop/grok-build-korean`** — Korean-tuned public fork of [xai-org/grok-build](https://github.com/xai-org/grok-build).
 >
-> - Binary name: **`grok-ko`** (install side-by-side with official `grok`)
-> - Changes: Korean session titles, idle recap, compaction summaries, key TUI labels — see [`FORK.md`](./FORK.md)
-> - Upstream does not accept external PRs; this fork is maintained independently.
+> | | |
+> |---|---|
+> | Binary | **`grok-ko`** (side-by-side; does not replace official `grok`) |
+> | Docs | [`FORK.md`](./FORK.md) · [`docs/fork/LAYOUT.md`](docs/fork/LAYOUT.md) · [`docs/fork/CHANGES.md`](docs/fork/CHANGES.md) |
+> | Install | `make install` then `grok-ko` |
+> | Smoke | `make smoke` |
+>
+> Upstream does not accept external PRs. This fork is maintained independently.
 
 <div align="center">
 
