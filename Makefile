@@ -9,6 +9,8 @@ BREW_BINDIR ?= /opt/homebrew/bin
 CARGO ?= cargo
 PACKAGE ?= xai-grok-pager-bin
 ARTIFACT ?= target/release/grok-ko
+# jemalloc can trip arm64 ld fixup errors on large release links; sandbox-only is enough for ship.
+CARGO_FEATURES ?= --no-default-features --features sandbox-enforce
 
 help:
 	@echo "grok-build-korean targets:"
@@ -28,7 +30,8 @@ deps:
 
 build:
 	@export PATH="/opt/homebrew/bin:$$PATH"; \
-	$(CARGO) build -p $(PACKAGE) --release
+	export MACOSX_DEPLOYMENT_TARGET="$${MACOSX_DEPLOYMENT_TARGET:-$$(sw_vers -productVersion | awk -F. '{print $$1".0"}')}"; \
+	$(CARGO) build -p $(PACKAGE) --release $(CARGO_FEATURES)
 	@test -x $(ARTIFACT)
 	@echo "built: $(ARTIFACT)"
 	@$(ARTIFACT) --version
