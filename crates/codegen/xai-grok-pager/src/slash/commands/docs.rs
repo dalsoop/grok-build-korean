@@ -49,13 +49,13 @@ impl SlashCommand for DocsCommand {
                 display: "how-to".into(),
                 match_text: "how-to".into(),
                 insert_text: "how-to".into(),
-                description: "Browse in-TUI How-to Guides".into(),
+                description: "앱 내 가이드 둘러보기".into(),
             },
             ArgItem {
                 display: "web".into(),
                 match_text: "web".into(),
                 insert_text: "web".into(),
-                description: "Open docs.x.ai/build in the browser".into(),
+                description: "브라우저에서 docs.x.ai/build 열기".into(),
             },
         ];
         items.extend(all_titles().map(|title| ArgItem {

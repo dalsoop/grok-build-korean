@@ -15,7 +15,7 @@ impl SlashCommand for CompactCommand {
     }
 
     fn description(&self) -> &str {
-        "Compact conversation history"
+        "대화 기록 압축"
     }
 
     fn session_scoped(&self) -> bool {
@@ -23,7 +23,7 @@ impl SlashCommand for CompactCommand {
     }
 
     fn usage(&self) -> &str {
-        "/compact compaction instructions"
+        "/compact 압축 지시"
     }
 
     fn takes_args(&self) -> bool {
@@ -36,7 +36,7 @@ impl SlashCommand for CompactCommand {
     }
 
     fn arg_placeholder(&self) -> Option<&str> {
-        Some("compaction instructions")
+        Some("압축 지시 (선택)")
     }
 
     fn run(&self, _ctx: &mut CommandExecCtx, args: &str) -> CommandResult {

@@ -460,7 +460,7 @@ pub fn render_turn_status(
                     .strip_prefix("Ask: ")
                     .or_else(|| title.strip_prefix("Ask "))
                     .unwrap_or(title.as_str());
-                let msg = format!("Waiting on answers for {detail}");
+                let msg = format!("{detail} 답변 대기 중");
                 let display = truncate_str(&msg, available_for_label);
                 left_spans.push(Span::styled(display, activity_style));
             } else if let Some(desc) = description
@@ -929,9 +929,9 @@ mod tests {
         use crate::acp::tracker::WaitingReason;
         let theme = Theme::current();
         let cases = [
-            (WaitingReason::Model, "Waiting for response…"),
-            (WaitingReason::Subagent, "Waiting on subagent…"),
-            (WaitingReason::task_output(), "Waiting on task output…"),
+            (WaitingReason::Model, "응답 대기 중…"),
+            (WaitingReason::Subagent, "서브에이전트 대기 중…"),
+            (WaitingReason::task_output(), "작업 출력 대기 중…"),
             (
                 WaitingReason::TaskOutput {
                     task_ids: vec!["t1".into()],
@@ -940,7 +940,7 @@ mod tests {
                 },
                 "compile release…",
             ),
-            (WaitingReason::TasksComplete, "Waiting on tasks…"),
+            (WaitingReason::TasksComplete, "작업 대기 중…"),
             (WaitingReason::Sleep, "Sleeping…"),
         ];
         for (reason, expected) in cases {
@@ -1465,7 +1465,7 @@ mod tests {
         );
         let text = buffer_text(&buf, area);
         assert!(
-            text.contains("Waiting on subagent… 5m59s · 1 queued — Enter to send now"),
+            text.contains("서브에이전트 대기 중… 5m59s · 1 queued — Enter to send now"),
             "phase timer must sit between the wait label and the queued hint, got: {text:?}"
         );
     }

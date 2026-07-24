@@ -768,7 +768,7 @@ mod tests {
             "availableCommands": [
                 {
                     "name": "compact",
-                    "description": "Compact conversation history",
+                    "description": "대화 기록 압축",
                     "input": { "hint": "<focus>" }
                 },
                 {
@@ -780,7 +780,7 @@ mod tests {
         let cmds = parse_available_commands(meta.as_object());
         assert_eq!(cmds.len(), 2);
         assert_eq!(cmds[0].name, "compact");
-        assert_eq!(cmds[0].description, "Compact conversation history");
+        assert_eq!(cmds[0].description, "대화 기록 압축");
         assert!(cmds[0].input.is_some());
         assert_eq!(cmds[1].name, "flush");
         assert!(cmds[1].input.is_none());

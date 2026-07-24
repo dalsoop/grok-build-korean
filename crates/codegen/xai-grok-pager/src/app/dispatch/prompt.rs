@@ -1347,9 +1347,9 @@ pub(super) fn handle_prompt_response(
             (Ok(_), false) if !agent.bash_turn => {
                 let body = match elapsed {
                     Some(d) => {
-                        format!("Turn complete in {}.", crate::util::format_duration(d))
+                        format!("{} 만에 턴 완료.", crate::util::format_duration(d))
                     }
-                    None => String::from("Turn complete."),
+                    None => String::from("턴 완료."),
                 };
                 Some((NotificationEventKind::TurnComplete, body))
             }
@@ -1361,7 +1361,7 @@ pub(super) fn handle_prompt_response(
                     && !reauth_prompted
                     && !context_overflow =>
             {
-                Some((NotificationEventKind::AgentError, format!("Error: {err}")))
+                Some((NotificationEventKind::AgentError, format!("오류: {err}")))
             }
             _ => None,
         };

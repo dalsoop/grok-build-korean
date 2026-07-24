@@ -15,7 +15,7 @@ impl SlashCommand for UsageCommand {
     }
 
     fn description(&self) -> &str {
-        "View usage"
+        "사용량 보기"
     }
 
     fn usage(&self) -> &str {
@@ -40,13 +40,13 @@ impl SlashCommand for UsageCommand {
                 display: "show".into(),
                 match_text: "show".into(),
                 insert_text: "show".into(),
-                description: "View usage".into(),
+                description: "사용량 보기".into(),
             },
             ArgItem {
                 display: "manage".into(),
                 match_text: "manage".into(),
                 insert_text: "manage".into(),
-                description: "Manage billing".into(),
+                description: "결제 관리".into(),
             },
         ])
     }

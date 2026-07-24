@@ -774,7 +774,7 @@ pub fn default_settings() -> Vec<SettingMeta> {
             key: "permission_mode",
             category: SettingCategory::Agent,
             owner: SettingOwner::Shell,
-            label: "Permission mode",
+            label: "권한 모드",
             description: "Default uses the agent's built-in behavior; \
                           Ask prompts for each tool action; \
                           Auto uses an LLM classifier for risky tools; \

@@ -93,7 +93,7 @@ impl SlashCommand for DoctorCommand {
             display: "fix".into(),
             match_text: "fix".into(),
             insert_text: "fix".into(),
-            description: "Show automatic fixes available here".into(),
+            description: "여기서 자동 수정을 확인".into(),
         }])
     }
 

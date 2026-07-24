@@ -16,7 +16,7 @@ impl SlashCommand for RenameCommand {
     }
 
     fn description(&self) -> &str {
-        "Rename the current session"
+        "현재 세션 이름 바꾸기"
     }
 
     fn session_scoped(&self) -> bool {

@@ -342,8 +342,8 @@ pub fn format_resumed_tasks_reminder(entries: &[BackgroundTaskManifestEntry]) ->
 
     let now = std::time::SystemTime::now();
     let mut buf = String::from(
-        "This session was resumed. The following background tasks were running \
-         when the session was last active and may still be in progress:\n",
+        "세션을 이어왔습니다. 마지막 활성 시 다음 백그라운드 작업이 실행 중이었으며 \
+         아직 진행 중일 수 있습니다:\n",
     );
     for entry in entries {
         let cmd = entry.display_command.as_deref().unwrap_or(&entry.command);
@@ -354,14 +354,14 @@ pub fn format_resumed_tasks_reminder(entries: &[BackgroundTaskManifestEntry]) ->
         };
         let _ = writeln!(
             buf,
-            "- \"{}\"{} (started {}): {}",
+            "- \"{}\"{} (시작 {}): {}",
             entry.task_id, kind_label, ago, cmd
         );
-        let _ = writeln!(buf, "  Output log: {}", entry.output_file.display());
+        let _ = writeln!(buf, "  출력 로그: {}", entry.output_file.display());
     }
     buf.push_str(
-        "Check whether each is still running and read its output log to determine \
-         if it completed successfully.",
+        "각 작업이 아직 실행 중인지 확인하고, 출력 로그를 읽어 \
+         성공 여부를 판단하세요.",
     );
     buf
 }
@@ -678,7 +678,7 @@ mod tests {
     fn format_reminder_single_task() {
         let entries = vec![make_manifest_entry("bg-1", 7200)];
         let reminder = format_resumed_tasks_reminder(&entries);
-        assert!(reminder.contains("This session was resumed"));
+        assert!(reminder.contains("세션을 이어왔습니다"));
         assert!(reminder.contains("bg-1"));
         assert!(reminder.contains("2h ago"));
         assert!(reminder.contains("rsync -aP src:bg-1 /data/"));

@@ -249,9 +249,9 @@ fn format_workflow_status_reminder(
     use std::fmt::Write as _;
     let n = runs.len();
     let noun = if n == 1 {
-        "background workflow run"
+        "백그라운드 워크플로 실행"
     } else {
-        "background workflow runs"
+        "백그라운드 워크플로 실행"
     };
     let mut buf = format!("Status of {n} {noun} in this session:\n");
     for run in runs {
@@ -270,7 +270,7 @@ fn format_workflow_status_reminder(
         if !objective.is_empty() {
             let _ = write!(
                 buf,
-                "\n  Objective: {}",
+                "\n  목표: {}",
                 xai_grok_tools::util::truncate_str(&objective, WORKFLOW_OBJECTIVE_REMINDER_CAP)
             );
         }
@@ -373,19 +373,19 @@ fn format_workflow_completion_reminder(
     use std::fmt::Write as _;
     let n = runs.len();
     let noun = if n == 1 {
-        "background workflow run"
+        "백그라운드 워크플로 실행"
     } else {
-        "background workflow runs"
+        "백그라운드 워크플로 실행"
     };
     let verb = if runs.iter().any(|r| !r.status.is_terminal()) {
-        "stopped (finished or paused)"
+        "중단됨 (완료 또는 일시정지)"
     } else {
-        "finished"
+        "완료됨"
     };
     let mut buf = if before_resume {
-        format!("This session was resumed. {n} {noun} {verb} before the resume:\n")
+        format!("세션을 이어왔습니다. 이어오기 전에 {n}개 {noun}이(가) {verb}:\n")
     } else {
-        format!("While you were idle, {n} {noun} {verb}:\n")
+        format!("유휴 중에 {n}개 {noun}이(가) {verb}:\n")
     };
     for run in runs {
         let _ = write!(
@@ -403,7 +403,7 @@ fn format_workflow_completion_reminder(
         if !objective.is_empty() {
             let _ = write!(
                 buf,
-                "\n  Objective: {}",
+                "\n  목표: {}",
                 xai_grok_tools::util::truncate_str(&objective, WORKFLOW_OBJECTIVE_REMINDER_CAP)
             );
         }

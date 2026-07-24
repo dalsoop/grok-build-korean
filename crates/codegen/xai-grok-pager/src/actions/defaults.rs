@@ -748,7 +748,7 @@ pub(super) fn default_actions(
         ActionDef {
             id: ActionId::NewSession,
             label: "new",
-            description: "New session",
+            description: "새 세션",
             default_key: key!('n', CONTROL),
             alt_keys: vec![],
             category: Category::Session,
@@ -763,7 +763,7 @@ pub(super) fn default_actions(
         ActionDef {
             id: ActionId::Quit,
             label: "quit",
-            description: "Quit",
+            description: "종료",
             default_key: if in_vscode {
                 key!('d', CONTROL)
             } else {
