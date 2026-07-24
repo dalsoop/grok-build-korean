@@ -257,7 +257,7 @@ fn format_workflow_status_reminder(
     for run in runs {
         let _ = write!(
             buf,
-            "\n- Workflow '{}' (run id {}) — status: {}",
+            "\n- 워크플로 '{}' (run id {}) — 상태: {}",
             run.name,
             run.run_id,
             run.status.as_str()
@@ -315,7 +315,7 @@ fn format_workflow_status_reminder(
         }
         let _ = write!(
             buf,
-            "\n  Elapsed: {}",
+            "\n  경과: {}",
             format_workflow_elapsed(run.elapsed_ms_floor)
         );
         if run.status.is_paused() {
@@ -390,7 +390,7 @@ fn format_workflow_completion_reminder(
     for run in runs {
         let _ = write!(
             buf,
-            "\n- Workflow '{}' (run id {}) — status: {}",
+            "\n- 워크플로 '{}' (run id {}) — 상태: {}",
             run.name,
             run.run_id,
             run.status.as_str()
@@ -409,7 +409,7 @@ fn format_workflow_completion_reminder(
         }
         let _ = write!(
             buf,
-            "\n  Elapsed: {}",
+            "\n  경과: {}",
             format_workflow_elapsed(run.elapsed_ms_floor)
         );
         if let Some(summary) = run.result_summary.as_deref() {
