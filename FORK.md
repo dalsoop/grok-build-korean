@@ -1,4 +1,4 @@
-# grok-build-ko — Korean fork of Grok Build
+# grok-build-korean — Korean fork of Grok Build
 
 Public fork of [xai-org/grok-build](https://github.com/xai-org/grok-build) (Apache-2.0).
 
