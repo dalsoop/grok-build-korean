@@ -218,8 +218,8 @@ fn push_separator(buf: &mut String, has_parts: &mut bool) {
 
 fn write_activity(buf: &mut String, activity: &TurnActivity) {
     match activity {
-        TurnActivity::Thinking => buf.push_str("Thinking"),
-        TurnActivity::Responding => buf.push_str("Responding"),
+        TurnActivity::Thinking => buf.push_str("생각 중"),
+        TurnActivity::Responding => buf.push_str("응답 중"),
         TurnActivity::ToolRunning { title, description } => {
             if let Some(desc) = description
                 .as_deref()
@@ -228,13 +228,13 @@ fn write_activity(buf: &mut String, activity: &TurnActivity) {
             {
                 buf.push_str(&crate::acp::tracker::format_waiting_for_subject(desc));
             } else if title.is_empty() {
-                buf.push_str("Running tool");
+                buf.push_str("도구 실행 중");
             } else {
-                buf.push_str("Running: ");
+                buf.push_str("실행: ");
                 write_truncated(buf, title, 30);
             }
         }
-        TurnActivity::AutoCompacting => buf.push_str("Compacting"),
+        TurnActivity::AutoCompacting => buf.push_str("압축 중"),
         TurnActivity::Retrying {
             attempt,
             max_retries,
@@ -455,7 +455,7 @@ mod tests {
             ..idle_state()
         };
         mgr.update(&state);
-        assert_eq!(mgr.last_title, "Thinking");
+        assert_eq!(mgr.last_title, "생각 중");
     }
 
     #[test]
@@ -468,7 +468,7 @@ mod tests {
             ..idle_state()
         };
         mgr.update(&state);
-        assert_eq!(mgr.last_title, "Responding");
+        assert_eq!(mgr.last_title, "응답 중");
     }
 
     #[test]
@@ -500,7 +500,7 @@ mod tests {
             ..idle_state()
         };
         mgr.update(&state);
-        assert_eq!(mgr.last_title, "Running tool");
+        assert_eq!(mgr.last_title, "도구 실행 중");
     }
 
     #[test]
@@ -569,7 +569,7 @@ mod tests {
             ..idle_state()
         };
         mgr.update(&state);
-        assert_eq!(mgr.last_title, "Thinking - grok");
+        assert_eq!(mgr.last_title, "생각 중 - grok");
     }
 
     // --- Action Required blinking ---
@@ -806,7 +806,7 @@ mod tests {
         // Both should contain the persistent parts.
         for t in [&t1, &t2] {
             assert!(t.contains("grok"), "title missing 'grok': {t}");
-            assert!(t.contains("Responding"), "title missing 'Responding': {t}");
+            assert!(t.contains("응답 중"), "title missing 'Responding': {t}");
             assert!(t.contains("my-session"), "title missing session name: {t}");
         }
         // One should have ActionRequired, the other should not (blinking).
@@ -846,7 +846,7 @@ mod tests {
         mgr.update(&state);
         assert_eq!(
             mgr.last_title,
-            "Thinking - proj - grok-3 - workspace - grok"
+            "생각 중 - proj - grok-3 - workspace - grok"
         );
     }
 
@@ -864,8 +864,8 @@ mod tests {
             ..idle_state()
         };
         mgr.update(&state);
-        // "Running: " (9 chars) + 30 chars + ellipsis = 40 chars
-        assert!(mgr.last_title.starts_with("Running: "));
+        // "실행: " (9 chars) + 30 chars + ellipsis = 40 chars
+        assert!(mgr.last_title.starts_with("실행: "));
         assert!(mgr.last_title.ends_with('\u{2026}'));
     }
 

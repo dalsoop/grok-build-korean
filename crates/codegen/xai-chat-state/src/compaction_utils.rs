@@ -664,7 +664,7 @@ pub fn format_compact_summary(summary: &str) -> String {
         let before = result[..start].to_string();
         let after = result[end + "</summary>".len()..].to_string();
         let inner = strip_leading_scratchpad(result[start + "<summary>".len()..end].trim());
-        result = format!("{before}Summary:\n{inner}{after}");
+        result = format!("{before}요약:\n{inner}{after}");
     }
     result = neutralize_compaction_control_tokens(&result);
     while result.contains("\n\n\n") {
@@ -713,8 +713,8 @@ fn neutralize_compaction_control_tokens(text: &str) -> String {
 pub fn format_compact_summary_content(raw_summary: &str) -> String {
     let cleaned = format_compact_summary(raw_summary);
     format!(
-        "This session is being continued from a previous conversation that ran out of context. \
-         The summary below covers the earlier portion of the conversation.\n\n{cleaned}"
+        "이 세션은 컨텍스트 한도를 넘긴 이전 대화에서 이어집니다. \
+         아래 요약은 대화의 앞부분을 다룹니다. 이어서 작업할 때도 한국어로 응답하세요.\n\n{cleaned}"
     )
 }
 /// Floor for the cleaned seed (degenerate band observed at 75–264
@@ -1851,7 +1851,7 @@ actual user question";
         let result = format_compact_summary(input);
         assert!(!result.contains("Analysis:"));
         assert!(!result.contains("Thinking about the problem"));
-        assert!(result.contains("Summary:\n1. Primary Request: Fix the bug"));
+        assert!(result.contains("요약:\n1. Primary Request: Fix the bug"));
         assert!(!result.contains("<analysis>"));
         assert!(!result.contains("</analysis>"));
         assert!(!result.contains("<summary>"));
@@ -1866,7 +1866,7 @@ actual user question";
     fn format_compact_summary_only_summary() {
         let input = "<summary>\n1. Request: Do something\n</summary>";
         let result = format_compact_summary(input);
-        assert_eq!(result, "Summary:\n1. Request: Do something");
+        assert_eq!(result, "요약:\n1. Request: Do something");
     }
     #[test]
     fn format_compact_summary_collapses_blank_lines() {
@@ -1880,7 +1880,7 @@ actual user question";
         let result = format_compact_summary(input);
         assert!(!result.contains("wrap my output in <summary> tags"));
         assert!(!result.contains("<analysis>"));
-        assert!(result.contains("Summary:\n1. Primary Request: Fix bug"));
+        assert!(result.contains("요약:\n1. Primary Request: Fix bug"));
     }
     #[test]
     fn format_compact_summary_unclosed_analysis_strips_remainder() {
@@ -1896,7 +1896,7 @@ actual user question";
     }
     fn assert_clean_summary(result: &str) {
         assert!(
-            result.starts_with("Summary:\n1. Primary Request"),
+            result.starts_with("요약:\n1. Primary Request"),
             "lost real section 1: {result:?}"
         );
         assert!(
@@ -1982,7 +1982,7 @@ actual user question";
             9. Optional Next Step: rerun\n\
             </summary>";
         let result = format_compact_summary(raw);
-        assert!(result.starts_with("Summary:\n1. Primary Request: build app"));
+        assert!(result.starts_with("요약:\n1. Primary Request: build app"));
         assert!(result.contains("9. Optional Next Step: rerun"));
         assert!(
             !result.contains("Analysis"),
@@ -2011,7 +2011,7 @@ actual user question";
             </summary>";
         let result = format_compact_summary(raw);
         assert!(
-            result.starts_with("Summary:\n1. Primary Request and Intent: build app"),
+            result.starts_with("요약:\n1. Primary Request and Intent: build app"),
             "section 1 / heading lost: {result:?}"
         );
         for needle in ["2. Key Technical Concepts", "9. Optional Next Step"] {
@@ -2033,7 +2033,7 @@ actual user question";
             </summary>";
         let result = format_compact_summary(raw);
         assert!(
-            result.starts_with("Summary:\n1. Primary Request: build app"),
+            result.starts_with("요약:\n1. Primary Request: build app"),
             "section 1 lost: {result:?}"
         );
         assert!(
@@ -2083,7 +2083,7 @@ actual user question";
             <summary>\n1. Primary Request: build app\n9. Optional Next Step: rerun\n</summary>";
         let result = format_compact_summary(raw);
         assert!(
-            result.starts_with("Summary:\n1. Primary Request: build app"),
+            result.starts_with("요약:\n1. Primary Request: build app"),
             "scratchpad leaked ahead of heading: {result:?}"
         );
         assert!(result.contains("9. Optional Next Step: rerun"));
@@ -2121,7 +2121,7 @@ actual user question";
             9. Optional Next Step: rerun\n\
             </summary>";
         let result = format_compact_summary(raw);
-        assert!(result.starts_with("Summary:\n1. Primary Request: build app"));
+        assert!(result.starts_with("요약:\n1. Primary Request: build app"));
         assert!(result.contains("9. Optional Next Step: rerun"));
         assert_eq!(
             result.matches("then wrap in").count(),
@@ -2150,23 +2150,23 @@ actual user question";
         let raw =
             "<summary>1. Primary Request: ship 🚀 to 北京\n9. Optional Next Step: 完成</summary>";
         let result = format_compact_summary(raw);
-        assert!(result.starts_with("Summary:\n1. Primary Request: ship 🚀 to 北京"));
+        assert!(result.starts_with("요약:\n1. Primary Request: ship 🚀 to 北京"));
         assert!(result.contains("9. Optional Next Step: 完成"));
     }
     #[test]
     fn format_compact_summary_content_adds_preamble() {
         let result = format_compact_summary_content("Some summary text.");
-        assert!(result.starts_with("This session is being continued"));
+        assert!(result.starts_with("이 세션은 컨텍스트 한도를 넘긴 이전 대화에서 이어집니다"));
         assert!(result.contains("Some summary text."));
     }
     #[test]
     fn format_compact_summary_content_cleans_tags() {
         let raw = "<analysis>\nThinking\n</analysis>\n\n<summary>\n1. Fix bug\n</summary>";
         let result = format_compact_summary_content(raw);
-        assert!(result.starts_with("This session is being continued"));
+        assert!(result.starts_with("이 세션은 컨텍스트 한도를 넘긴 이전 대화에서 이어집니다"));
         assert!(!result.contains("Analysis:"));
         assert!(!result.contains("Thinking"));
-        assert!(result.contains("Summary:\n1. Fix bug"));
+        assert!(result.contains("요약:\n1. Fix bug"));
         assert!(!result.contains("<analysis>"));
         assert!(!result.contains("<summary>"));
     }
@@ -2209,7 +2209,7 @@ actual user question";
             result.contains("<\u{200b}summary>"),
             "tag not neutralized: {result}"
         );
-        assert!(result.contains("Summary:\n1. Primary Request and Intent: Build a Mario clone."));
+        assert!(result.contains("요약:\n1. Primary Request and Intent: Build a Mario clone."));
     }
     #[test]
     fn format_compact_summary_content_neutralizes_instruction_echo() {
@@ -2218,7 +2218,7 @@ actual user question";
             <summary>...</summary> block.'\n\
             9. Optional Next Step: continue.\n</summary>";
         let seed = format_compact_summary_content(raw);
-        assert!(seed.starts_with("This session is being continued"));
+        assert!(seed.starts_with("이 세션은 컨텍스트 한도를 넘긴 이전 대화에서 이어집니다"));
         assert!(
             !seed.contains("<summary>"),
             "live <summary> in seed: {seed}"
@@ -2546,7 +2546,7 @@ actual user question";
             "summary should NOT be wrapped in <user_query> tags"
         );
         assert!(
-            summary.starts_with("This session is being continued"),
+            summary.starts_with("이 세션은 컨텍스트 한도를 넘긴 이전 대화에서 이어집니다"),
             "summary should start with the preamble"
         );
         assert!(summary.contains("Summary: fixed login bug."));
@@ -2602,7 +2602,7 @@ actual user question";
         assert_eq!(compacted.len(), 5);
         let summary = compacted[4].text_content();
         assert!(
-            summary.starts_with("This session is being continued"),
+            summary.starts_with("이 세션은 컨텍스트 한도를 넘긴 이전 대화에서 이어집니다"),
             "summary should start with preamble (no <user_query> wrapping)"
         );
         assert!(
@@ -2866,11 +2866,11 @@ actual user question";
             "system-reminder should NOT be in the summary message"
         );
         assert!(
-            summary.starts_with("This session is being continued from a previous conversation"),
+            summary.starts_with("이 세션은 컨텍스트 한도를 넘긴 이전 대화에서 이어집니다"),
             "summary should start with the continuation preamble"
         );
         let expected_summary = "\
-This session is being continued from a previous conversation that ran out of context. The summary below covers the earlier portion of the conversation.
+이 세션은 컨텍스트 한도를 넘긴 이전 대화에서 이어집니다. 아래 요약은 대화의 앞부분을 다룹니다. 이어서 작업할 때도 한국어로 응답하세요.
 
 The user asked to read main.rs and lib.rs. main.rs prints hello world, lib.rs has an add function. The user then asked to fix a typo in main.rs and run tests. The typo was fixed and tests passed.";
         assert_eq!(

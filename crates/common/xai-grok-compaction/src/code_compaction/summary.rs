@@ -53,7 +53,7 @@ pub fn format_compact_summary(summary: &str) -> String {
         }
     }
 
-    // 2. Convert the outer <summary>…</summary> to "Summary:\n{inner}", keeping
+    // 2. Convert the outer <summary>…</summary> to "요약:\n{inner}", keeping
     //    any text outside the wrapper. `rfind` matches the outer close, so a
     //    literal "</summary>" echoed in the body does not truncate the summary;
     //    `end > start` guards a malformed "</summary> … <summary>" order. Leading
@@ -66,7 +66,7 @@ pub fn format_compact_summary(summary: &str) -> String {
         let before = result[..start].to_string();
         let after = result[end + "</summary>".len()..].to_string();
         let inner = strip_leading_scratchpad(result[start + "<summary>".len()..end].trim());
-        result = format!("{before}Summary:\n{inner}{after}");
+        result = format!("{before}요약:\n{inner}{after}");
     }
 
     // 3. Defuse any compaction-control tokens still echoed inside the body so the
@@ -130,8 +130,8 @@ pub fn is_degenerate_summary(raw_summary: &str) -> bool {
 pub fn format_compact_summary_content(raw_summary: &str) -> String {
     let cleaned = format_compact_summary(raw_summary);
     format!(
-        "This session is being continued from a previous conversation that ran out of context. \
-         The summary below covers the earlier portion of the conversation.\n\n{cleaned}"
+        "이 세션은 컨텍스트 한도를 넘긴 이전 대화에서 이어집니다. \
+         아래 요약은 대화의 앞부분을 다룹니다. 이어서 작업할 때도 한국어로 응답하세요.\n\n{cleaned}"
     )
 }
 
@@ -165,7 +165,7 @@ mod tests {
         let input = "<analysis>\nThinking about the problem...\n</analysis>\n\n<summary>\n1. Primary Request: Fix the bug\n</summary>";
         let result = format_compact_summary(input);
         assert!(!result.contains("Thinking about the problem"));
-        assert!(result.contains("Summary:\n1. Primary Request: Fix the bug"));
+        assert!(result.contains("요약:\n1. Primary Request: Fix the bug"));
         assert!(!result.contains("<analysis>"));
         assert!(!result.contains("<summary>"));
     }
@@ -181,7 +181,7 @@ mod tests {
     #[test]
     fn only_summary_becomes_heading() {
         let result = format_compact_summary("<summary>\n1. Request: Do something\n</summary>");
-        assert_eq!(result, "Summary:\n1. Request: Do something");
+        assert_eq!(result, "요약:\n1. Request: Do something");
     }
 
     #[test]
@@ -232,7 +232,7 @@ mod tests {
         let raw =
             "<summary>1. Primary Request: ship 🚀 to 北京\n9. Optional Next Step: 完成</summary>";
         let result = format_compact_summary(raw);
-        assert!(result.starts_with("Summary:\n1. Primary Request: ship 🚀 to 北京"));
+        assert!(result.starts_with("요약:\n1. Primary Request: ship 🚀 to 北京"));
         assert!(result.contains("9. Optional Next Step: 完成"));
     }
 
@@ -250,8 +250,8 @@ mod tests {
         let result = format_compact_summary_content(
             "<analysis>\nThinking\n</analysis>\n\n<summary>\n1. Fix bug\n</summary>",
         );
-        assert!(result.starts_with("This session is being continued"));
-        assert!(result.contains("Summary:\n1. Fix bug"));
+        assert!(result.starts_with("이 세션은 컨텍스트 한도를 넘긴 이전 대화에서 이어집니다"));
+        assert!(result.contains("요약:\n1. Fix bug"));
         assert!(!result.contains("Thinking"));
         assert!(!result.contains("<summary>"));
     }

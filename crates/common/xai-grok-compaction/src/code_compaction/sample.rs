@@ -233,7 +233,7 @@ mod tests {
     /// A non-degenerate summary (cleaned seed >= MIN_SUMMARY_SEED_CHARS).
     fn healthy() -> String {
         format!(
-            "Summary:\n1. Primary Request: do the thing\n{}",
+            "요약:\n1. Primary Request: do the thing\n{}",
             "x".repeat(600)
         )
     }

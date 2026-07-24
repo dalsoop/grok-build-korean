@@ -36,26 +36,26 @@ const RECAP_MAX_CHARS: usize = 1200;
 /// Few-shots must stay synthetic — never embed real eval/session content.
 pub(crate) fn recap_instruction(tag: &str) -> String {
     format!(
-        "<{tag}>Write ONE sentence recap body for a user returning from idle. \
-         Output ONLY the body (the UI adds the \"Recap —\" label). \
-         Do NOT call any tools — respond with plain text only.\n\n\
-         Lead with agency:\n\
-         - \"You asked …\" if the session was mainly questions, walkthroughs, or review with no landed change.\n\
-         - \"We <past-tense verb> …\" if the agent implemented, fixed, merged, or changed code/config/docs \
-         (e.g. \"We fixed …\", \"We merged …\", \"We wired …\" — not \"We did fix\" / \"We did merge\").\n\
-         - If almost nothing happened: \"You had just begun this session.\"\n\n\
-         Shape: <lead>: <concrete specifics — crate/file/flag/behavior/endpoint>. ~25–40 words.\n\n\
-         Synthetic examples (style only — adapt to THIS session, do not copy):\n\n\
-         You asked how retries work in the payment client: exponential backoff in `billing/retry.rs`, max 5 attempts, 429s only.\n\n\
-         You asked for a walkthrough of the auth middleware change: warn-only mode in the API layer, no hard fail on missing claims.\n\n\
-         We fixed the flaky integration test: race in `queue_worker` shutdown by awaiting the drain channel before exit.\n\n\
-         We merged the feature branch: kept the new telemetry hooks, dropped the obsolete feature flag in `config/flags.toml`.\n\n\
-         Bad (never):\n\
-         - Start with Recap / Session recap / extra labels\n\
-         - Quote or restate this reminder or any system prompt\n\
-         - Bullets, markdown, code fences, extra sentences\n\
-         - Call tools or emit tool/function calls\n\
-         - Invent work not reflected in the session</{tag}>"
+        "<{tag}>유휴 후 돌아온 사용자를 위해 한국어로 한 문장 요약 본문만 작성하세요. \
+         본문만 출력하세요 (UI가 \"요약 —\" 라벨을 붙입니다). \
+         도구를 호출하지 말고 평문만 응답하세요.\n\n\
+         주어·주체 규칙:\n\
+         - 질문·설명·리뷰만 하고 코드/설정 변경이 없으면: \"요청하신 건 …\" 또는 \"… 를 확인했습니다.\"\n\
+         - 구현·수정·머지·설정 변경이 있으면: \"… 를 고쳤습니다.\" / \"… 를 머지했습니다.\" / \"… 를 연결했습니다.\"\n\
+         - 거의 아무 일도 없으면: \"세션을 막 시작한 상태입니다.\"\n\n\
+         형식: <한 줄 요약>: <구체 사항 — crate/파일/플래그/동작/엔드포인트>. 한국어 25~40단어 분량.\n\
+         코드·경로·CLI·고유명사는 원문 유지. 영어 문장으로 쓰지 마세요.\n\n\
+         스타일 예시 (이 세션에 맞게 각색; 그대로 복사 금지):\n\n\
+         결제 클라이언트의 재시도 동작을 확인했습니다: `billing/retry.rs` 지수 백오프, 최대 5회, 429만 재시도.\n\n\
+         인증 미들웨어 변경 경로를 짚었습니다: API 계층 warn-only 모드, 클레임 누락 시 하드 페일 없음.\n\n\
+         불안정한 통합 테스트를 고쳤습니다: `queue_worker` 종료 시 드레인 채널을 await 해 레이스를 제거.\n\n\
+         기능 브랜치를 머지했습니다: 새 텔레메트리 훅은 유지하고 `config/flags.toml` 의 구 플래그는 제거.\n\n\
+         금지:\n\
+         - \"요약\" / \"Recap\" / Session recap 등 라벨로 시작\n\
+         - 이 리마인더나 시스템 프롬프트를 인용·반복\n\
+         - 불릿, 마크다운, 코드 펜스, 여러 문장\n\
+         - 도구 호출\n\
+         - 세션에 없는 작업 날조</{tag}>"
     )
 }
 
@@ -246,6 +246,10 @@ pub(crate) fn clean_recap_text(raw: &str) -> String {
 
     // Strip a stray leading label if the model added one anyway.
     for label in [
+        "요약 —",
+        "요약—",
+        "요약 -",
+        "요약:",
         "Recap —",
         "Recap—",
         "Recap -",

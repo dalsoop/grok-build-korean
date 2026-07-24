@@ -105,7 +105,7 @@ pub fn clamp_activity_subject(s: &str) -> String {
 pub fn format_waiting_for_subject(subject: &str) -> String {
     let clamped = clamp_activity_subject(subject);
     if clamped.is_empty() {
-        "Waiting on task output…".to_string()
+        "작업 출력 대기 중…".to_string()
     } else {
         format!("{clamped}…")
     }
@@ -123,15 +123,15 @@ impl WaitingReason {
     /// User-facing spinner label.
     pub fn label(&self) -> String {
         match self {
-            Self::Model => "Waiting for response…".to_string(),
-            Self::Subagent => "Waiting on subagent…".to_string(),
+            Self::Model => "응답 대기 중…".to_string(),
+            Self::Subagent => "서브에이전트 대기 중…".to_string(),
             Self::TaskOutput {
                 subject: Some(subject),
                 ..
             } => format_waiting_for_subject(subject),
-            Self::TaskOutput { .. } => "Waiting on task output…".to_string(),
-            Self::TasksComplete => "Waiting on tasks…".to_string(),
-            Self::Sleep => "Sleeping…".to_string(),
+            Self::TaskOutput { .. } => "작업 출력 대기 중…".to_string(),
+            Self::TasksComplete => "작업 대기 중…".to_string(),
+            Self::Sleep => "대기 중…".to_string(),
         }
     }
     /// Short, stable snake_case label for telemetry / phase-transition logs.

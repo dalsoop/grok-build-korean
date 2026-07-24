@@ -250,8 +250,8 @@ impl SessionEvent {
                 )
             }
             SessionEvent::Recap { summary, auto: _ } => {
-                // Always "Recap —" (manual `/recap` and auto return-from-away).
-                format!("Recap \u{2014} {summary}")
+                // Always "요약 —" (manual `/recap` and auto return-from-away).
+                format!("요약 \u{2014} {summary}")
             }
         }
     }
@@ -466,7 +466,7 @@ impl SessionEventBlock {
         let header_style = header_text_style.add_modifier(Modifier::BOLD);
         // Non-selectable chrome (same as Thinking / tool label prefixes).
         let header_line =
-            || BlockLine::separator(Line::from(Span::styled("Recap".to_string(), header_style)));
+            || BlockLine::separator(Line::from(Span::styled("요약".to_string(), header_style)));
 
         // Loading: header only; the animated gray sidebar is the feedback.
         if ctx.is_running {
@@ -477,7 +477,7 @@ impl SessionEventBlock {
 
         match ctx.mode {
             DisplayMode::Collapsed => {
-                let mut spans = vec![Span::styled("Recap".to_string(), header_style)];
+                let mut spans = vec![Span::styled("요약".to_string(), header_style)];
                 let preview = summary.lines().next().unwrap_or(summary).trim();
                 if !preview.is_empty() {
                     spans.push(Span::styled(format!("  {preview}"), theme.muted()));
@@ -947,8 +947,8 @@ mod tests {
         let out = block.output(&recap_ctx(DisplayMode::Expanded, false));
         assert_eq!(
             plain(&out.lines[0]),
-            "Recap",
-            "header line is the 'Recap' label"
+            "요약",
+            "header line is the '요약' label"
         );
         let body = out.lines.iter().map(plain).collect::<Vec<_>>().join("\n");
         assert!(
@@ -1017,7 +1017,7 @@ mod tests {
         // Header only — no blank line or body while still generating.
         let out = block.output(&rc);
         assert_eq!(out.lines.len(), 1, "loading recap is just the header");
-        assert_eq!(plain(&out.lines[0]), "Recap");
+        assert_eq!(plain(&out.lines[0]), "요약");
 
         // The sidebar + bullet animate in gray (the feedback) — not the magenta
         // running color used for active tool turns.
@@ -1040,7 +1040,7 @@ mod tests {
         let out = block.output(&recap_ctx(DisplayMode::Collapsed, false));
         assert_eq!(out.lines.len(), 1, "collapsed recap is a single line");
         let text = plain(&out.lines[0]);
-        assert!(text.starts_with("Recap"), "starts with the header: {text}");
+        assert!(text.starts_with("요약"), "starts with the header: {text}");
         assert!(
             text.contains("First line of recap."),
             "shows a preview: {text}"

@@ -61,7 +61,7 @@ pub(crate) fn title_fallback_from_user_text(user_message: &str) -> String {
         .collect::<Vec<_>>()
         .join(" ");
     if s.is_empty() {
-        "New session".to_string()
+        "새 세션".to_string()
     } else {
         s
     }
@@ -79,14 +79,15 @@ pub async fn generate_session_summary(
     let clean_message = title_source_text(&user_message);
     let request = ConversationRequest::from_items(vec![
         ConversationItem::system(
-            r#"You are tasked with generating the session title. The user is asking almost always software engineering related questions on their codebase.
-We describe the session title below
-# Session Title
-A short and distinctive 5-10 word descriptive title for the session. Super info dense, no filler.
+            r#"당신은 세션 제목을 만드는 역할입니다. 사용자는 거의 항상 코드베이스 관련 소프트웨어 엔지니어링 질문을 합니다.
 
-You will be given the user query below encapsulated in <user_query></user_query>.
+# 세션 제목
+- 한국어로 작성하세요 (코드·파일·CLI·고유명사는 원문 유지 가능).
+- 정보 밀도가 높은 5~10단어 분량의 짧은 제목.
+- 수식어·불필요한 조사·따옴표·마침표 없이 핵심만.
+- 예: "GitLab MR 리뷰 앱 연동", "미병합 MR 점검", "워크트리 정리"
 
-Just generate the session_title and nothing else"#,
+아래 <user_query></user_query> 안의 사용자 요청을 보고 session_title 만 생성하세요."#,
         ),
         ConversationItem::user(format!(
             r#"<user_query>
@@ -98,14 +99,14 @@ Just generate the session_title and nothing else"#,
     .with_model(model)
     .with_tools(vec![ToolSpec {
         name: "session_title".to_owned(),
-        description: Some("Generate the session_title which we use for the user_message".to_owned()),
+        description: Some("사용자 요청을 요약한 한국어 세션 제목 생성".to_owned()),
         parameters: serde_json::json!({
             "type": "object",
             "required": ["session_title"],
             "properties": {
                 "session_title": {
                     "type": "string",
-                    "description": "Final session title, just 5-10 word descriptive title for the session. Super info dense, no filler."
+                    "description": "최종 세션 제목. 한국어 5~10단어, 정보 밀도 높게, 군더더기 없이."
                 }
             },
             "additionalProperties": false
@@ -222,7 +223,7 @@ mod tests {
 
     #[test]
     fn fallback_new_session_when_whitespace_only() {
-        assert_eq!(title_fallback_from_user_text("   \n\t"), "New session");
+        assert_eq!(title_fallback_from_user_text("   \n\t"), "새 세션");
     }
 
     #[test]

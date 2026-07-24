@@ -412,8 +412,8 @@ mod tests {
         let MockItem::UserMeta(summary) = &out[5] else {
             panic!("expected UserMeta summary at [5], got {:?}", out[5]);
         };
-        assert!(summary.starts_with("This session is being continued"));
-        assert!(summary.contains("Summary:\n1. Primary Request: fix login bug"));
+        assert!(summary.starts_with("이 세션은 컨텍스트 한도를 넘긴 이전 대화에서 이어집니다"));
+        assert!(summary.contains("요약:\n1. Primary Request: fix login bug"));
         assert!(
             !summary.contains("<analysis>"),
             "scratchpad leaked: {summary}"

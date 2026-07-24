@@ -168,7 +168,7 @@ mod tests {
         let MockItem::UserMeta(summary) = &out[6] else {
             panic!("expected UserMeta summary, got {:?}", out[6]);
         };
-        assert!(summary.starts_with("This session is being continued"));
+        assert!(summary.starts_with("이 세션은 컨텍스트 한도를 넘긴 이전 대화에서 이어집니다"));
         assert_eq!(
             out[7],
             MockItem::SystemReminder("<system-reminder>state</system-reminder>".into())
@@ -185,7 +185,7 @@ mod tests {
         // [sys, prefix, summary]
         assert_eq!(out.len(), 3);
         assert!(
-            matches!(&out[2], MockItem::UserMeta(s) if s.starts_with("This session is being continued"))
+            matches!(&out[2], MockItem::UserMeta(s) if s.starts_with("이 세션은 컨텍스트 한도를 넘긴 이전 대화에서 이어집니다"))
         );
     }
 

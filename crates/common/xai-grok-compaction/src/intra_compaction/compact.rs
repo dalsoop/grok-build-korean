@@ -1504,7 +1504,7 @@ mod tests {
             .await
             .expect("non-degenerate summary should succeed");
         assert!(
-            cleaned.starts_with("Summary:"),
+            cleaned.starts_with("요약:"),
             "expected cleaned heading: {cleaned:?}"
         );
         assert!(!cleaned.contains("thinking"), "scratchpad must be stripped");
