@@ -2,6 +2,8 @@
 
 Patches are **in-tree** (no quilt series). When merging upstream, re-check these paths first.
 
+Docs / ops SSOT for how to build and ship: [`FORK.md`](../../FORK.md).
+
 ## A — Summaries & chrome (high impact)
 
 | Area | Paths |
@@ -32,18 +34,45 @@ Patches are **in-tree** (no quilt series). When merging upstream, re-check these
 | BG task resume | `crates/codegen/xai-grok-shell/src/terminal/background_task.rs` |
 | ACP slash catalog | `crates/codegen/xai-grok-pager/src/acp/mod.rs` |
 
+## Ops / ship (not UI copy)
+
+| Area | Paths / notes |
+|------|----------------|
+| Makefile ship features | `Makefile` — `CARGO_FEATURES=--no-default-features --features sandbox-enforce`; arm64 jemalloc link workaround |
+| Install / smoke / upstream scripts | `scripts/{install-grok-ko,smoke-grok-ko,sync-upstream,check-korean-ssot}.sh` |
+| Structural SSOT gate | `scripts/check-korean-ssot.sh` — source needles + release binary Hangul; refuses version hash `0ce7dd5` |
+| Smoke hardening | `scripts/smoke-grok-ko.sh` — refuse stale `0ce7dd5`; Hangul reply/title checks |
+
+### SSOT needles (must stay present)
+
+Maintained by `scripts/check-korean-ssot.sh`:
+
+| Location | Needle |
+|----------|--------|
+| `session_summary.rs` | `새 세션` |
+| `session_recap.rs` | `요약 —` |
+| compact template | `Write the entire summary body in Korean` |
+| slash `compact.rs` | `대화 기록 압축` |
+| dashboard `row.rs` | `NEW_SESSION_LABEL: &str = "새 세션"` |
+| release binary (if built) | `생각 중` (UTF-8 bytes) |
+| `--version` | must **not** be stale hash `0ce7dd5` |
+
 ## Intentionally left English
 
 - Tool kinds: Bash / Read / Edit / Search (CLI/API names)
 - Slash **command names** (`/compact`, not Hangul)
-- Upstream docs under `docs/user-guide/`
+- Upstream docs under `crates/codegen/xai-grok-pager/docs/user-guide/` (and tutorial)
 - Internal telemetry keys / snake_case labels
 
 ## Verify after rebuild
 
 ```bash
 make install
+./scripts/check-korean-ssot.sh
 make smoke
-# binary should embed Hangul strings:
-python3 -c "from pathlib import Path; b=Path('/opt/homebrew/bin/grok-ko').read_bytes(); print('생각 중' in b.decode('utf-8','replace'))"
+# dual smoke when shipping a release binary
+make smoke
+
+# optional: binary embeds Hangul wait label
+python3 -c "from pathlib import Path; b=Path('target/release/grok-ko').read_bytes(); print('생각 중' in b.decode('utf-8','replace'))"
 ```

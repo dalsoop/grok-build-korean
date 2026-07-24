@@ -2,12 +2,31 @@
 >
 > | | |
 > |---|---|
-> | Binary | **`grok-ko`** (side-by-side; does not replace official `grok`) |
-> | Docs | [`FORK.md`](./FORK.md) · [`docs/fork/LAYOUT.md`](docs/fork/LAYOUT.md) · [`docs/fork/CHANGES.md`](docs/fork/CHANGES.md) |
-> | Install | `make install` then `grok-ko` |
-> | Smoke | `make smoke` |
+> | Binary | **`grok-ko`** (side-by-side; does **not** replace official `grok`) |
+> | Auth / sessions | Shared `~/.grok/` with the official CLI |
+> | Korean scope | **A** titles/recap/compact/chrome · **B** slash/settings/resume |
+> | Docs (fork SSOT) | [`FORK.md`](./FORK.md) · [`docs/fork/LAYOUT.md`](docs/fork/LAYOUT.md) · [`docs/fork/CHANGES.md`](docs/fork/CHANGES.md) |
+> | Install | `make install` → `grok-ko` |
+> | Gates | `./scripts/check-korean-ssot.sh` · `make smoke` |
 >
 > Upstream does not accept external PRs. This fork is maintained independently.
+> Prefer **[`FORK.md`](./FORK.md)** over the upstream install/build sections below when working in this repo.
+
+## This fork (`grok-ko`)
+
+```bash
+make deps          # macOS: dotslash, protobuf
+make install       # release build + install side-by-side grok-ko
+./scripts/check-korean-ssot.sh
+make smoke         # headless Korean reply + title (needs ~/.grok auth)
+grok-ko            # run this fork
+grok               # official binary (unchanged)
+make version       # HEAD / artifact / PATH / official
+```
+
+Ship build uses **sandbox-only features** (no jemalloc) to avoid arm64 release-link failures. Details: [`FORK.md`](./FORK.md).
+
+The sections below are largely **upstream** documentation (official `grok` binary name, `x.ai/cli` install). They still apply for general Grok Build concepts; for **this fork’s binary name and Makefile**, use the commands above.
 
 <div align="center">
 
