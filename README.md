@@ -1,3 +1,9 @@
+> **This is `dalsoop/grok-build-korean`** — a Korean-tuned public fork of [xai-org/grok-build](https://github.com/xai-org/grok-build).
+>
+> - Binary name: **`grok-ko`** (install side-by-side with official `grok`)
+> - Changes: Korean session titles, idle recap, compaction summaries, key TUI labels — see [`FORK.md`](./FORK.md)
+> - Upstream does not accept external PRs; this fork is maintained independently.
+
 <div align="center">
 
 <h1>
