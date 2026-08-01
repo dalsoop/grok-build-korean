@@ -1,0 +1,29 @@
+# sim wide (120 cols) — control
+generated: 2026-07-24T05:22:03.381050+00:00
+term_width: 120
+area_width (after outer_hpad 2+2): 116
+cluster_total_width: 71
+start_x (absolute): 47
+cwd_budget: 44
+cwd_shown: '⎇ main  ~/Documents/WORK/WORKSPACE/apps/swif'
+overflows: False
+overflow_cols: 0
+
+items (push order = left→right inside right-aligned cluster):
+  [0] 'bg_tasks': '⠋ 2' (w=3)
+  [1] 'plan': 'plan' (w=4)
+  [2] 'goal': 'Active · 12.4k/50k tokens · 3m' (w=30)
+  [3] 'context': '████████ 67.5%' (w=14)
+  [4] 'queue': '+3' (w=2)
+  [5] 'badge': '3/7' (w=3)
+
+logical chip cluster (may extend past area):
+  |⠋ 2 │ plan │ Active · 12.4k/50k tokens · 3m │ ████████ 67.5% │ +3 │ 3/7|
+  len=71
+
+full terminal row visible in 120 cols:
+  |  ⎇ main  ~/Documents/WORK/WORKSPACE/apps/swif ⠋ 2 │ plan │ Active · 12.4k/50k tokens · 3m │ ████████ 67.5% │ +3 │ 3/7  |
+
+column ruler:
+  012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789
+

@@ -82,6 +82,10 @@ impl<'a> AgentStatusBar<'a> {
     /// Layout: `··· item0 │ item1 │ item2` — separators appear only *between*
     /// items, never before the first or after the last.
     ///
+    /// When the full cluster is wider than the area, **leading** items are
+    /// dropped so the trailing chips stay on-screen. Paint never crosses
+    /// `area.right()` (minus `right_pad`).
+    ///
     /// Returns a map of item ID → screen `Rect` for hit-testing.
     pub fn render(self, buf: &mut Buffer, area: Rect) -> HashMap<&'static str, Rect> {
         if area.height == 0 || area.width == 0 || self.items.is_empty() {
@@ -93,41 +97,69 @@ impl<'a> AgentStatusBar<'a> {
 
         let sep = self.separator();
         let sep_w = sep.width() as u16; // 3
+        let available = area.width.saturating_sub(self.right_pad);
+        if available == 0 {
+            return HashMap::new();
+        }
 
-        // Total width: items plus the separators *between* them only — no
-        // leading separator before the first item or trailing one after the
-        // last.
-        let items_width: u16 = self.items.iter().map(|e| e.width).sum();
-        let num_seps = (self.items.len() as u16).saturating_sub(1);
+        // Prefer keeping trailing (rightmost) items when the cluster overflows.
+        let mut start_idx = 0usize;
+        while start_idx < self.items.len() {
+            let slice = &self.items[start_idx..];
+            let items_width: u16 = slice.iter().map(|e| e.width).sum();
+            let num_seps = (slice.len() as u16).saturating_sub(1);
+            let total_width = items_width + num_seps * sep_w;
+            if total_width <= available || start_idx + 1 == self.items.len() {
+                break;
+            }
+            start_idx += 1;
+        }
+        let visible = &self.items[start_idx..];
+
+        let items_width: u16 = visible.iter().map(|e| e.width).sum();
+        let num_seps = (visible.len() as u16).saturating_sub(1);
         let total_width = items_width + num_seps * sep_w;
 
-        // Right-align: compute starting x
-        let start_x = area
-            .x
-            .saturating_add(area.width.saturating_sub(self.right_pad + total_width));
+        // Right-align within the available width.
+        let start_x = area.x.saturating_add(available.saturating_sub(total_width));
+        let right_edge = area.x.saturating_add(available);
 
         let mut x = start_x;
         let mut areas = HashMap::new();
 
-        for (i, entry) in self.items.iter().enumerate() {
+        for (i, entry) in visible.iter().enumerate() {
+            if x >= right_edge {
+                break;
+            }
             // Separator before every item except the first.
             if i > 0 {
-                buf.set_span(x, area.y, &sep, sep_w);
-                x += sep_w;
+                let paint_sep = sep_w.min(right_edge.saturating_sub(x));
+                if paint_sep == 0 {
+                    break;
+                }
+                buf.set_span(x, area.y, &sep, paint_sep);
+                x = x.saturating_add(paint_sep);
+                if paint_sep < sep_w {
+                    break;
+                }
             }
 
-            // Render item
-            buf.set_line(x, area.y, &entry.line, entry.width);
+            let paint_w = entry.width.min(right_edge.saturating_sub(x));
+            if paint_w == 0 {
+                break;
+            }
+            // Clamp paint width so we never write past the status area.
+            buf.set_line(x, area.y, &entry.line, paint_w);
             areas.insert(
                 entry.id,
                 Rect {
                     x,
                     y: area.y,
-                    width: entry.width,
+                    width: paint_w,
                     height: 1,
                 },
             );
-            x += entry.width;
+            x = x.saturating_add(paint_w);
         }
 
         areas
@@ -905,5 +937,46 @@ mod tests {
         let row: String = (0..area.width).map(|x| buf[(x, 0)].symbol()).collect();
         assert_eq!(row.trim(), "XX");
         assert!(!row.contains(SEPARATOR));
+    }
+
+    /// When the chip cluster is wider than the area, drop leading items so the
+    /// trailing chips stay inside the frame (no paint past `area.right()`).
+    #[test]
+    fn status_bar_drops_leading_items_when_narrow() {
+        let theme = Theme::current();
+        let mut bar = AgentStatusBar::new(&theme);
+        bar.push("a", Line::from("AAAAAAAAAA")); // 10
+        bar.push("b", Line::from("BBBBBBBBBB")); // 10
+        bar.push("c", Line::from("CCCCCCCCCC")); // 10
+        // seps between three items: 3+3 = 6 → total 36. Area 20 fits only "C…"
+        let area = Rect::new(0, 0, 20, 1);
+        let mut buf = Buffer::empty(area);
+        let areas = bar.render(&mut buf, area);
+
+        assert!(
+            areas.contains_key("c"),
+            "trailing chip must remain, areas={areas:?}"
+        );
+        assert!(
+            !areas.contains_key("a"),
+            "leading chip must be dropped, areas={areas:?}"
+        );
+
+        let row: String = (0..area.width).map(|x| buf[(x, 0)].symbol()).collect();
+        assert!(
+            !row.contains('A'),
+            "leading chip must not paint into the row: {row:?}"
+        );
+        assert!(
+            row.contains('C'),
+            "trailing chip must paint inside the area: {row:?}"
+        );
+        // Every painted cell stays within the area by construction of the loop;
+        // assert the rightmost content column is in-bounds.
+        let last_content = row.rfind(|c: char| !c.is_whitespace()).unwrap_or(0);
+        assert!(
+            last_content < area.width as usize,
+            "painted past area: last_content={last_content} row={row:?}"
+        );
     }
 }

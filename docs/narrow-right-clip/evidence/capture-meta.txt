@@ -1,0 +1,5 @@
+generated: 2026-07-24T05:58:57Z
+grok: grok 0.2.111 (94172f2aa4e5)
+workdir: /Users/jeonghan/Documents/WORK/WORKSPACE/apps/swift-app-mono/.bare/main
+rows: 40
+settle_sec: 5

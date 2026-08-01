@@ -1,0 +1,42 @@
+# agent capture 40x40
+# generated: 2026-07-24T06:00:24Z
+
+                                        
+  ~/Documents/WORK/WORKSP… 7.9K / 500K  
+                                        
+                                        
+     ❯ echo narrow-clip-     3:00 PM    
+       probe-1784872809                 
+                                        
+                                        
+     ◆ user_prompt_submit  [hooks: 3    
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        
+    ⠧ Waiting… 6.7s 6.7s ⇣7.95k [stop]  
+                                        
+  ╭──────────────────────────────────╮  
+  │ ❯                                │  
+  ╰─ Grok 4.5 (high) · always-approv─╯  
+                                        
+  Shift+Tab:mode  │  Esc:cancel  │      
+                                        
